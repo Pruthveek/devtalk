@@ -1,0 +1,24 @@
+{
+  "name": "devtalk",
+  "version": "1.0.0",
+  "description": "Connect to the developer, which is in your field.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pruthveek/devtalk.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Pruthveek/devtalk/issues"
+  },
+  "homepage": "https://github.com/Pruthveek/devtalk#readme",
+  "dependencies": {
+    "express": "^5.1.0",
+    "mongoose": "^8.18.1"
+  }
+}
