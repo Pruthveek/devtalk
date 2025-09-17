@@ -3,6 +3,7 @@ const validator = require("validator");
 const url = require("url");
 const path = require("path");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const userSchema = new mongoos.Schema(
   {
@@ -60,7 +61,10 @@ const userSchema = new mongoos.Schema(
     },
     gender: {
       type: String,
-      enum: ["male", "female", "others"],
+      enum: {
+        values:["male", "female", "others"],
+        message:`{VALUE} is not a valid gender type`
+      },
       validate(value) {
         if (!["male", "female", "others"].includes(value)) {
           throw new Error("Gender is not proper");
@@ -92,6 +96,13 @@ const userSchema = new mongoos.Schema(
     skills: {
       type: [String],
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+    deletedAt: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
@@ -104,12 +115,16 @@ userSchema.methods.getJWT = async function () {
   });
   return token;
 };
-userSchema.methods.validatePassword=async function(passwordInputByUser){
-  const user=this;
-  const hashPassword=user.password
-  const isPasswordValid = await bcrypt.compare(passwordInputByUser,hashPassword );
+
+userSchema.methods.validatePassword = async function (passwordInputByUser) {
+  const user = this;
+  const hashPassword = user.password;
+  const isPasswordValid = await bcrypt.compare(
+    passwordInputByUser,
+    hashPassword
+  );
   return isPasswordValid;
 };
 
-// const User=mongoos.model("User",userSchema);
+// const User=new mongoos.model("User",userSchema);
 module.exports = mongoos.model("User", userSchema);

@@ -13,6 +13,40 @@ const validateSigninData = (req) => {
   }
 };
 
+const validateEditProfileData = (req) => {
+  const allowedEditFilds = [
+    "firstName",
+    "lastname",
+    "email",
+    "photoUrl",
+    "about",
+    "skills",
+    "age",
+    "gender",
+  ];
+  if (!validator.isEmail(req.body.email)) {
+    throw new Error("Please chack your email something wrong in it.");
+  } else if (req.body.skills.length > 10) {
+    throw new Error("Skills cannot be more than 10");
+  } else if (!["male", "female", "others"].includes(req.body.gender)) {
+    throw new Error("Gender is not proper");
+  }
+  const isEditAllowed = Object.keys(req.body).every((field) =>
+    allowedEditFilds.includes(field)
+  );
+  return isEditAllowed;
+};
+
+const vlaidateNewPassword=(req)=>{
+  const {password}=req.body;
+  if (!validator.isStrongPassword(password)) {
+    throw new Error(
+      "password should contain atleast one number and one special character, Please add more strong password"
+    );
+  }
+}
 module.exports = {
   validateSigninData,
+  validateEditProfileData,
+  vlaidateNewPassword
 };
