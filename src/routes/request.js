@@ -83,4 +83,52 @@ requestRouter.post(
   }
 );
 
+requestRouter.post(
+  "/request/review/:status/:requestId",
+  userAuth,
+  async (req, res) => {
+    try {
+      const loggedInUser = req.user;
+      const { status, requestId } = req.params;
+
+      if (!mongoose.Types.ObjectId.isValid(loggedInUser._id)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+
+      if (!mongoose.Types.ObjectId.isValid(requestId)) {
+        return res.status(400).json({ message: "Invalid request ID" });
+      }
+
+      const allowedStatus = ["accepted", "rejected"];
+      if (!allowedStatus.includes(status)) {
+        return res.status(400).json({ message: "Status not allowed" });
+      }
+
+      const connectionRequest = await ConnectionRequest.findOne({
+        _id: requestId,
+        toUserId: loggedInUser._id,
+        status: "interested",
+      });
+
+      if (!connectionRequest) {
+        return res.status(404).json({ message: "Connection request not found" });
+      }
+
+      connectionRequest.status = status;
+      const savedRequest = await connectionRequest.save();
+
+      return res.status(200).json({
+        message: "Connection request reviewed successfully",
+        request: savedRequest,
+      });
+    } catch (err) {
+      console.error("Error while reviewing connection request:", err);
+      res.status(500).json({
+        message: "Internal server error",
+        error: err.message,
+      });
+    }
+  }
+);
+
 module.exports = requestRouter;

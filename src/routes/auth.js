@@ -32,7 +32,7 @@ authRouter.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!validator.isEmail(email)) {
-      throw new Error("Please chack your email something wrong in it.");
+      throw new Error("Invalid credentials");
     }
     const user = await User.findOne({ email: email });
     if (!user) {
@@ -49,7 +49,7 @@ authRouter.post("/login", async (req, res) => {
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
         httpOnly: true,
       });
-      res.send("Login sucessfully");
+      res.send(user);
     }
   } catch (err) {
     res.status(400).send("Something went wrong : " + err.message);
