@@ -41,8 +41,6 @@ requestRouter.post(
 
       // Check if target user exists
       const toUser = await User.findById(toUserId);
-      console.log("To user:", toUser);
-
       if (!toUser) {
         return res.status(404).json({ message: "User not found" });
       }

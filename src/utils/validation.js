@@ -16,17 +16,14 @@ const validateSigninData = (req) => {
 const validateEditProfileData = (req) => {
   const allowedEditFilds = [
     "firstName",
-    "lastname",
-    "email",
+    "lastName",
     "photoUrl",
     "about",
     "skills",
     "age",
     "gender",
   ];
-  if (!validator.isEmail(req.body.email)) {
-    throw new Error("Please chack your email something wrong in it.");
-  } else if (req.body.skills.length > 10) {
+  if (req.body.skills.length > 10) {
     throw new Error("Skills cannot be more than 10");
   } else if (!["male", "female", "others"].includes(req.body.gender)) {
     throw new Error("Gender is not proper");

@@ -78,15 +78,15 @@ const userSchema = new mongoos.Schema(
         if (!validator.isURL(value, { protocols: ["http", "https", "ftp"] })) {
           throw new Error("Please add a valid URL");
         }
-        const pathname = url.parse(value).pathname || "";
-        const ext = path.extname(pathname).toLowerCase();
-        const allowedExt = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"];
+        // const pathname = url.parse(value).pathname || "";
+        // const ext = path.extname(pathname).toLowerCase();
+        // const allowedExt = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"];
 
-        if (!allowedExt.includes(ext)) {
-          throw new Error(
-            "URL must point to an image (.jpg, .jpeg, .png, .gif, .webp, .svg)"
-          );
-        }
+        // if (!allowedExt.includes(ext)) {
+        //   throw new Error(
+        //     "Invalid image type"
+        //   );
+        // }
       },
     },
     about: {
