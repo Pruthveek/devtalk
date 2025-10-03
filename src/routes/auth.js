@@ -21,17 +21,19 @@ authRouter.post("/signin", async (req, res) => {
       email,
       password: passwordHash,
     });
-    const savedUser=await user.save();
+    const savedUser = await user.save();
     const token = await user.getJWT();
-      // Add the token to cookie and send the response back to the user
-      res.cookie("token", token, {
-        expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
-        httpOnly: true,
-      });
-    
-    res.json({message:"Sign-up sucessfully",data:savedUser})
+    // Add the token to cookie and send the response back to the user
+    res.cookie("token", token, {
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      httpOnly: true,
+    });
+
+    res.json({ message: "Sign-up sucessfully", data: savedUser });
   } catch (err) {
-    res.status(400).json({ message:"Something went wrong" ,error: err.message } );
+    res
+      .status(400)
+      .json({ message: "Something went wrong", error: err.message });
   }
 });
 
@@ -53,13 +55,15 @@ authRouter.post("/login", async (req, res) => {
       const token = await user.getJWT();
       // Add the token to cookie and send the response back to the user
       res.cookie("token", token, {
-        expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
         httpOnly: true,
       });
       res.send(user);
     }
   } catch (err) {
-    res.status(400).json({ message:"Something went wrong" ,error: err.message } );
+    res
+      .status(400)
+      .json({ message: "Something went wrong", error: err.message });
   }
 });
 

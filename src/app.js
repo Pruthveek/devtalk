@@ -2,11 +2,14 @@ const express = require("express");
 const connectDB = require("./config/database");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+require("dotenv").config();
+require("./utils/cronjob");
+const PORT = process.env.PORT || 7777;
 const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
     credentials: true,
   })
 );
@@ -27,9 +30,9 @@ app.use("/", userRouter);
 connectDB()
   .then(() => {
     console.log("Database connection established...");
-    app.listen(7777, () => {
-      console.log("Server is listing sucessfully on port number 7777");
-      console.log("link : http://localhost:7777/");
+    app.listen(PORT, () => {
+      console.log("Server is listing sucessfully on port number " + PORT);
+      console.log(`http://localhost:${PORT}`);
     });
   })
   .catch((error) => {

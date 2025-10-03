@@ -4,6 +4,7 @@ const { userAuth } = require("../middlewares/auth");
 const User = require("../models/user");
 const ConnectionRequest = require("../models/connectionRequest");
 const mongoose = require("mongoose");
+const sendMail = require("../utils/sendMail");
 
 // Simple test route
 requestRouter.post("/sendConnectionRequest", userAuth, async (req, res) => {
@@ -65,6 +66,14 @@ requestRouter.post(
         toUserId,
         status,
       });
+      if (status === "interested") {
+        await sendMail(
+          toUser.email,
+          "New Connection Request",
+          `${req.user.email} sent you a connection request`,
+          `<p>${req.user.firstName} wants to connect with you!</p>`
+        );
+      }
 
       const savedRequest = await connectionRequest.save();
 
@@ -109,7 +118,9 @@ requestRouter.post(
       });
 
       if (!connectionRequest) {
-        return res.status(404).json({ message: "Connection request not found" });
+        return res
+          .status(404)
+          .json({ message: "Connection request not found" });
       }
 
       connectionRequest.status = status;
