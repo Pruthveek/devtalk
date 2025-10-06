@@ -1,7 +1,5 @@
 const mongoos = require("mongoose");
 const validator = require("validator");
-const url = require("url");
-const path = require("path");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
