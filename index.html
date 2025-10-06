@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Clean Chatbot UI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<style type="text/tailwindcss">
+    :root {
+      --background-light: #f7f9fc;
+      --background-dark: #111418;
+      --foreground-light: #111418;
+      --foreground-dark: #ffffff;
+      --primary-blue: #0d80f2;
+      --secondary-gray: #6b7280;
+      --container-light: #ffffff;
+      --container-dark: #1e293b;
+      --bubble-light: #f0f2f5;
+      --bubble-dark: #334155;
+    }
+    .dark {
+      --background-light: var(--background-dark);
+      --foreground-light: var(--foreground-dark);
+      --container-light: var(--container-dark);
+      --bubble-light: var(--bubble-dark);
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .chat-bubble-user {
+      @apply bg-blue-500 text-white;
+    }
+    .chat-bubble-bot {
+       @apply bg-gray-200 text-gray-800 dark:bg-slate-700 dark:text-gray-200;
+    }
+  </style>
+<script>
+    function toggleDarkMode() {
+      document.documentElement.classList.toggle('dark');
+    }
+  </script>
+</head>
+<body class="bg-background-light text-foreground-light transition-colors duration-300">
+<div class="flex h-screen">
+<aside class="w-80 bg-container-light border-r border-gray-200 dark:bg-slate-900/70 dark:border-slate-800 flex flex-col">
+<div class="p-6 border-b border-gray-200 dark:border-slate-800">
+<h1 class="text-2xl font-bold">Chats</h1>
+</div>
+<div class="flex-1 overflow-y-auto">
+<nav class="p-2 space-y-1">
+<a class="flex items-center gap-4 p-3 rounded-lg bg-blue-500/10 dark:bg-blue-500/20" href="#">
+<div class="relative">
+<img alt="User 1" class="w-12 h-12 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTdc_-ZOoVajhm4bmgkgdHAELHRsCA1BEc4dXEPf1IjRIieuYfhW9H3gNT_rYY3ThYIVTEI2XX2ODSKYPdTz_ZlO6dQSM5j0MrwJcd-fPGVxD3BxV0-7XAR3l4IMQMqOBzZ92pCZEacTcMow3bvDBH8ME-uQfrw4tmAbbP9GMCo62GyCeT0hSkOy9qh9JAIRccoKRB-2datca04URWztIFQTe8MmdNcGVFTFPEaQqOpK_M1bgeqiN7G1e5MgXEgqOJLoQ-aC-G4gSX"/>
+<span class="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-green-500 border-2 border-white dark:border-slate-900"></span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between">
+<p class="font-semibold text-foreground-light">Elon Musk</p>
+<p class="text-xs text-secondary-gray">10:30 AM</p>
+</div>
+<p class="text-sm text-secondary-gray line-clamp-1">Awesome! Let's do it.</p>
+</div>
+</a>
+<a class="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800" href="#">
+<img alt="User 2" class="w-12 h-12 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPuWKyOPZK6uMklut7IdEuAi6QN8lXGL33GKv1NO7LMvEN_nHuU8nrv4tJpHnQEUMxed8HASiUHd2oKYo9fOchTSeMRuZ4GwmcpdvMchRJ2fc6uwbqUbR2NOuFjJhe6cZbC4DxTfIfJn4VP8HCMx15zASDjjf7TWjkXewk08dJd_Zhve2dzGZOov08U4wHAMp-SX3NoBfgWSggZZRQ7Ot0mwsiqktXwkdcYsgohiYAb8OwmXIS644f9xrmmtXnh706WdOZiG34QuEH"/>
+<div class="flex-1">
+<div class="flex justify-between">
+<p class="font-semibold text-foreground-light">Jeff Bezos</p>
+<p class="text-xs text-secondary-gray">Yesterday</p>
+</div>
+<p class="text-sm text-secondary-gray line-clamp-1">See you tomorrow!</p>
+</div>
+</a>
+</nav>
+</div>
+</aside>
+<main class="flex-1 flex flex-col bg-white dark:bg-slate-900">
+<header class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-slate-800">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img alt="Bot Avatar" class="w-10 h-10 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-EkzomR0-jUUMg9ZpGJPS9WS_0hPEe7b7PSfSZTBOZjpPKwpUjtPqYHPGMA2p6NnAPoQi5tXF748V4KDUHVTU0lDdgXAKc8ITwhIq7sBF9y35Km68bJyXKliSmMy8NoxodZIsXelHCdaNXhphDpuFmuaxvGVOmzTa6OMclLx-_ax4m-TzRfbEjdb-hWFR1ZvqvELLTfA_S3vLJo8zJ4VQPolGHdCHHutzMewy_CL_MO0BLzsbqgrY-aWEQDHGNANd-VupA4Swed2e"/>
+<span class="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-500 border-2 border-white dark:border-slate-900"></span>
+</div>
+<div>
+<h2 class="text-lg font-semibold">Support Bot</h2>
+<p class="text-sm text-green-500">Online</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-full text-secondary-gray hover:bg-gray-100 dark:hover:bg-slate-800" onclick="toggleDarkMode()">
+<span class="material-symbols-outlined dark:hidden">dark_mode</span>
+<span class="material-symbols-outlined hidden dark:inline">light_mode</span>
+</button>
+<button class="p-2 rounded-full text-secondary-gray hover:bg-gray-100 dark:hover:bg-slate-800" id="quick-actions-toggle">
+<span class="material-symbols-outlined">view_sidebar</span>
+</button>
+</div>
+</header>
+<div class="flex-1 overflow-y-auto p-6 space-y-6">
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-500">smart_toy</span>
+</div>
+<div class="flex flex-col gap-1 items-start">
+<div class="chat-bubble-bot rounded-lg p-3 max-w-md">
+<p>Hello! How can I assist you today?</p>
+</div>
+<p class="text-xs text-secondary-gray">10:35 AM</p>
+</div>
+</div>
+<div class="flex items-start gap-4 justify-end">
+<div class="flex flex-col gap-1 items-end">
+<div class="chat-bubble-user rounded-lg p-3 max-w-md">
+<p>I need help with my account.</p>
+</div>
+<p class="text-xs text-secondary-gray">10:36 AM</p>
+</div>
+<div class="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">
+            EM
+          </div>
+</div>
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-500">smart_toy</span>
+</div>
+<div class="flex flex-col gap-1 items-start">
+<div class="chat-bubble-bot rounded-lg p-3 max-w-md">
+<p>Sure, I can help with that. What seems to be the issue?</p>
+</div>
+<p class="text-xs text-secondary-gray">10:37 AM</p>
+</div>
+</div>
+<div class="flex items-start gap-4 justify-end">
+<div class="flex flex-col gap-1 items-end">
+<div class="chat-bubble-user rounded-lg p-3 max-w-md">
+<p>I forgot my password.</p>
+</div>
+<p class="text-xs text-secondary-gray">10:38 AM</p>
+</div>
+<div class="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">
+            EM
+          </div>
+</div>
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-500">smart_toy</span>
+</div>
+<div class="flex items-center space-x-1 chat-bubble-bot rounded-lg p-3 max-w-md">
+<div class="h-2 w-2 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+<div class="h-2 w-2 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+<div class="h-2 w-2 bg-slate-400 rounded-full animate-bounce"></div>
+</div>
+</div>
+</div>
+<footer class="p-4 bg-container-light dark:bg-slate-800/50 border-t border-gray-200 dark:border-slate-800">
+<div class="flex items-center gap-4">
+<div class="flex-1 relative">
+<input class="w-full bg-gray-100 dark:bg-slate-700 border-transparent rounded-full py-3 px-6 pr-24 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Type your message..." type="text"/>
+<div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+<button class="p-2 rounded-full text-secondary-gray hover:bg-gray-200 dark:hover:bg-slate-600">
+<span class="material-symbols-outlined">mic</span>
+</button>
+<button class="p-2 rounded-full text-secondary-gray hover:bg-gray-200 dark:hover:bg-slate-600">
+<span class="material-symbols-outlined">mood</span>
+</button>
+</div>
+</div>
+<button class="bg-blue-500 text-white rounded-full p-3 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-slate-900">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</footer>
+</main>
+<aside class="w-80 bg-container-light dark:bg-slate-900/70 border-l border-gray-200 dark:border-slate-800 flex flex-col transition-all duration-300 ease-in-out -mr-80" id="quick-actions-panel">
+<div class="p-6 border-b border-gray-200 dark:border-slate-800 flex justify-between items-center">
+<h2 class="text-xl font-bold">Quick Actions</h2>
+<button class="p-2 rounded-full text-secondary-gray hover:bg-gray-100 dark:hover:bg-slate-800" id="quick-actions-close">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex-1 p-6 space-y-4">
+<button class="w-full flex items-center gap-3 p-3 rounded-lg text-left bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700">
+<span class="material-symbols-outlined text-blue-500">help</span>
+<span>FAQ</span>
+</button>
+<button class="w-full flex items-center gap-3 p-3 rounded-lg text-left bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700">
+<span class="material-symbols-outlined text-green-500">sell</span>
+<span>Pricing</span>
+</button>
+<button class="w-full flex items-center gap-3 p-3 rounded-lg text-left bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700">
+<span class="material-symbols-outlined text-orange-500">confirmation_number</span>
+<span>Submit a Ticket</span>
+</button>
+</div>
+</aside>
+</div>
+<script>
+    const quickActionsToggle = document.getElementById('quick-actions-toggle');
+    const quickActionsPanel = document.getElementById('quick-actions-panel');
+    const quickActionsClose = document.getElementById('quick-actions-close');
+    quickActionsToggle.addEventListener('click', () => {
+      quickActionsPanel.classList.toggle('-mr-80');
+    });
+    quickActionsClose.addEventListener('click', () => {
+       quickActionsPanel.classList.add('-mr-80');
+    });
+  </script>
+
+</body></html>
