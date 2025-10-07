@@ -3,26 +3,20 @@ const User = require("../models/user");
 
 const userAuth = async (req, res, next) => {
   try {
-    const token = req.cookies?.token; 
+    const { token } = req.cookies;
     if (!token) {
-      return res.status(401).json({ error: "Please login!" });
+      return res.status(401).send("Please login!")
     }
-    let decoded;
-    try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    } catch (err) {
-      return res.status(401).json({ error: "Invalid or expired token" });
-    }
-    const user = await User.findById(decoded._id).select("-password");
+    const decodedObj = await jwt.verify(token, process.env.JWT_SECRET_KEY );
+    const { _id } = decodedObj;
+    const user = await User.findById(_id);
     if (!user) {
-      return res.status(401).json({ error: "Unauthorized" });
+      throw new Error("User does not exist");
     }
     req.user = user;
     next();
-
   } catch (err) {
-    console.error("Auth middleware error:", err);
-    res.status(500).json({ error: "Server error" });
+    res.status(400).send("ERROR: " + err.message);
   }
 };
 
