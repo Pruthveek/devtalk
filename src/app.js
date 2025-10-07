@@ -9,7 +9,18 @@ const app = express();
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "https://devtalk-frontend-git-main-pruthveeks-projects.vercel.app",
+    origin: function (origin, callback) {
+      const allowedOrigins = [
+        "http://localhost:5173", 
+        "https://devtalk-frontend-amber.vercel.app"
+      ];
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
