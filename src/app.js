@@ -7,28 +7,12 @@ require("./utils/cronjob");
 const PORT = process.env.PORT || 7777;
 const app = express();
 
-
-const allowedOrigins = [
-  "http://localhost:5173", // local dev
-  "https://devtalk-frontend-git-main-pruthveeks-projects.vercel.app", // production
-];
-
-app.use(cors({
-  origin: function(origin, callback) {
-    // allow server-to-server requests or curl (no origin)
-    if (!origin) return callback(null, true);
-    // check if origin is in allowed list
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.log("Blocked CORS origin:", origin);
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true, // important for cookies/auth
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"]
-}));
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "https://devtalk-frontend-amber.vercel.app",
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(cookieParser());
