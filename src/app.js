@@ -8,31 +8,32 @@ const PORT = process.env.PORT || 7777;
 const app = express();
 
 
-const allowedOrigins = [
-  process.env.FRONTEND_URL,        
-  "http://localhost:5173", 
-];
-
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl)
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-      return callback(new Error("Not allowed by CORS"));
-    },
-    credentials: true,
-  })
-);
+// const allowedOrigins = [
+//   process.env.FRONTEND_URL,        
+//   "http://localhost:5173", 
+// ];
 
 // app.use(
 //   cors({
-//     origin: process.env.FRONTEND_URL || "http://localhost:5173",
+//     origin: function (origin, callback) {
+//       // Allow requests with no origin (like mobile apps or curl)
+//       if (!origin) return callback(null, true);
+//       if (allowedOrigins.includes(origin)) {
+//         return callback(null, true);
+//       }
+//       return callback(new Error("Not allowed by CORS"));
+//     },
 //     credentials: true,
 //   })
 // );
+
+app.use(
+  cors({
+    // origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(cookieParser());
@@ -52,8 +53,7 @@ connectDB()
   .then(() => {
     console.log("Database connection established...");
     app.listen(PORT, () => {
-      console.log("Server is listing sucessfully on port number " + PORT);
-      console.log(`http://localhost:${PORT}`);
+      console.log("Server is listing sucessfully");
     });
   })
   .catch((error) => {
