@@ -1,14 +1,14 @@
 const express = require("express");
 const connectDB = require("./config/database");
-const app = express();
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-const http = require("http");
-
 require("dotenv").config();
-
 require("./utils/cronjob");
 
+const app = express();
+const PORT = process.env.PORT || 7777;
+
+// Middleware
 app.use(
   cors({
     origin: process.env.FRONTEND_URL || "http://localhost:5173",
@@ -18,31 +18,26 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-const authRouter = require("./routes/auth");
-const profileRouter = require("./routes/profile");
-const requestRouter = require("./routes/request");
-const userRouter = require("./routes/user");
-const paymentRouter = require("./routes/payment");
-const initializeSocket = require("./utils/socket");
-const chatRouter = require("./routes/chat");
+// Routers
+app.use("/auth", require("./routes/auth"));
+app.use("/profile", require("./routes/profile"));
+app.use("/request", require("./routes/request"));
+app.use("/user", require("./routes/user"));
+app.use("/payment", require("./routes/payment"));
 
-app.use("/", authRouter);
-app.use("/", profileRouter);
-app.use("/", requestRouter);
-app.use("/", userRouter);
-app.use("/", paymentRouter);
-app.use("/", chatRouter);
+// Optional health check route
+app.get("/health", (req, res) => {
+  res.status(200).json({ message: "Server is healthy" });
+});
 
-const server = http.createServer(app);
-initializeSocket(server);
-
+// Start server
 connectDB()
   .then(() => {
     console.log("Database connection established...");
-    server.listen(process.env.PORT, () => {
-      console.log("Server is successfully listening on port 7777...");
+    app.listen(PORT, () => {
+      console.log("Server is listening successfully on port number " + PORT);
     });
   })
-  .catch((err) => {
-    console.error("Database cannot be connected!!");
+  .catch((error) => {
+    console.error("Database connection failed:", error.message);
   });
