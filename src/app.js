@@ -33,7 +33,6 @@ connectDB()
     console.log("Database connection established...");
     app.listen(PORT, () => {
       console.log("Server is listing sucessfully on port number " + PORT);
-      console.log(`http://localhost:${PORT}`);
     });
   })
   .catch((error) => {
