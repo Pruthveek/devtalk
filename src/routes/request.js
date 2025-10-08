@@ -67,7 +67,7 @@ requestRouter.post(
         status,
       });
       if (status === "interested") {
-        await sendMail(
+        sendMail(
           toUser.email,
           "New Connection Request",
           `${req.user.email} sent you a connection request`,
