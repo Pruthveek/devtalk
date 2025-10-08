@@ -8,9 +8,9 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendMail = async (to, subject, text, html) => {
+const sendMail = (to, subject, text, html) => {
   try {
-    await transporter.sendMail({
+    transporter.sendMail({
       from: `"DevTalk" <${process.env.EMAIL_USER}>`,
       to,
       subject,
