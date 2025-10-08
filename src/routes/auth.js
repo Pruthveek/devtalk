@@ -21,11 +21,11 @@ authRouter.post("/signin", async (req, res) => {
       password: passwordHash,
     });
     const savedUser = await user.save();
-    const token = await savedUser.getJWT();
+    const token = await user.getJWT();
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      sameSite: "none",
+      secure: true,
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     });
     res.json({ success: true, message: "Sign-up successful", data: savedUser });
