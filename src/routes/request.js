@@ -66,16 +66,8 @@ requestRouter.post(
         toUserId,
         status,
       });
-      if (status === "interested") {
-        sendMail(
-          toUser.email,
-          "New Connection Request",
-          `${req.user.email} sent you a connection request`,
-          `<p>${req.user.firstName} wants to connect with you!</p>`
-        ).catch((err) => console.error("Email send error:", err));
-      }
       // if (status === "interested") {
-      //   await sendMail(
+      //     sendMail(
       //     toUser.email,
       //     "New Connection Request",
       //     `${req.user.email} sent you a connection request`,
