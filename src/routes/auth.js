@@ -5,16 +5,11 @@ const bcrypt = require("bcrypt");
 const validator = require("validator");
 const User = require("../models/user");
 
-//POST for signin a user and store user data in database
 authRouter.post("/signin", async (req, res) => {
   try {
-    // Validation of data
     validateSigninData(req);
-    // Extract fields from request body
     const { firstName, lastName, email, password } = req.body;
-    // Encrypt the password
     const passwordHash = await bcrypt.hash(password, 10);
-    // Creating a new instance of the User model
     const user = new User({
       firstName,
       lastName,
@@ -23,10 +18,11 @@ authRouter.post("/signin", async (req, res) => {
     });
     const savedUser = await user.save();
     const token = await user.getJWT();
-    // Add the token to cookie and send the response back to the user
     res.cookie("token", token, {
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     });
 
     res.json({ message: "Sign-up sucessfully", data: savedUser });
