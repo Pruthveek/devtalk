@@ -48,7 +48,7 @@ const userSchema = new mongoos.Schema(
         // const isValidPassword = strongPasswordPattern.test(value);
         if (!validator.isStrongPassword(value)) {
           throw new Error(
-            "Please add more strong password."
+            "password should contain atleast one number and one special character, Please add more strong password"
           );
         }
       },
