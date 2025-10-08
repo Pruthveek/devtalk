@@ -9,6 +9,10 @@ authRouter.post("/signin", async (req, res) => {
   try {
     validateSigninData(req);
     const { firstName, lastName, email, password } = req.body;
+    const isEmailExist = await User.findOne({ email });
+    if (isEmailExist) {
+      return res.status(400).json({error: "Email already exists",message:"Please signup with other email" });
+    }
     const passwordHash = await bcrypt.hash(password, 10);
     const user = new User({
       firstName,
@@ -17,19 +21,18 @@ authRouter.post("/signin", async (req, res) => {
       password: passwordHash,
     });
     const savedUser = await user.save();
-    const token = await user.getJWT();
+    const token = await savedUser.getJWT();
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "none",
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     });
-    res.json({ message: "Sign-up sucessfully", data: savedUser });
+    res.json({ success: true, message: "Sign-up successful", data: savedUser });
   } catch (err) {
-    res.status(400).json({ message: "Something went wrong", error: err.message });
+    res.status(400).json({ success: false, message: err.message });
   }
 });
-
 authRouter.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
