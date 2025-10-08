@@ -11,7 +11,7 @@ authRouter.post("/signin", async (req, res) => {
     const { firstName, lastName, email, password } = req.body;
     const isEmailExist = await User.findOne({ email });
     if (isEmailExist) {
-      return res.status(400).json({error: "Email already exists",message:"Please signup with other email" });
+      return res.status(400).json({ error: "Email already exists", message: "Please signup with other email" });
     }
     const passwordHash = await bcrypt.hash(password, 10);
     const user = new User({
@@ -21,11 +21,11 @@ authRouter.post("/signin", async (req, res) => {
       password: passwordHash,
     });
     const savedUser = await user.save();
-    const token = await user.getJWT();
+    const token = await savedUser.getJWT();
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "none",
-      secure: true,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: process.env.NODE_ENV === "production",
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     });
     res.json({ success: true, message: "Sign-up successful", data: savedUser });
@@ -33,6 +33,7 @@ authRouter.post("/signin", async (req, res) => {
     res.status(400).json({ success: false, message: err.message });
   }
 });
+
 authRouter.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -50,8 +51,8 @@ authRouter.post("/login", async (req, res) => {
       const token = await user.getJWT();
       res.cookie("token", token, {
         httpOnly: true,
-        sameSite: "none",
-        secure: true,
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        secure: process.env.NODE_ENV === "production",
         expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
       });
       res.send(user);
@@ -65,8 +66,8 @@ authRouter.post("/logout", async (req, res) => {
   res.cookie("token", null, {
     expires: new Date(Date.now()),
     httpOnly: true,
-    sameSite: "none",
-    secure: true,
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: process.env.NODE_ENV === "production",
   }).send("User logged out");
 });
 
