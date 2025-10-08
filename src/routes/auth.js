@@ -21,12 +21,20 @@ authRouter.post("/signin", async (req, res) => {
       email,
       password: passwordHash,
     });
+    const isEmailExist = await User.findOne({ email });
+    if (isEmailExist) {
+      throw new Error(
+      "Account already exists."
+    );
+    }
     const savedUser = await user.save();
-    const token = await user.getJWT();
+    const token = await savedUser.getJWT();
     // Add the token to cookie and send the response back to the user
     res.cookie("token", token, {
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       httpOnly: true,
+      sameSite: "none",
+      secure: true,
     });
 
     res.json({ message: "Sign-up sucessfully", data: savedUser });
@@ -57,6 +65,8 @@ authRouter.post("/login", async (req, res) => {
       res.cookie("token", token, {
         expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
         httpOnly: true,
+        sameSite: "none",
+        secure: true,
       });
       res.send(user);
     }
@@ -70,6 +80,8 @@ authRouter.post("/login", async (req, res) => {
 authRouter.post("/logout", async (req, res) => {
   res
     .cookie("token", null, {
+      sameSite: "none",
+      secure: true,
       expires: new Date(Date.now()),
     })
     .send("User logged out");
