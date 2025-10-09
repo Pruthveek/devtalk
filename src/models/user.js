@@ -106,9 +106,10 @@ const userSchema = new mongoos.Schema(
     membershipType: {
       type: String,
       enum: {
-        values: ["silver", "gold"],
+        values: ["silver", "gold","basic"],
         message: `{VALUE} is not a valid membership type`,
       },
+      default: "basic",
     },
     membershipValidity: {
       type: Date,

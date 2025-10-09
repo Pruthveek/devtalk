@@ -55,7 +55,7 @@ const paymentSchema = new mongoose.Schema(
       firstName: { type: String },
       lastName: { type: String },
       email: { type: String, validate: [validator.isEmail, "Invalid email"] },
-      membershipType: { type: String, enum: ["silver", "gold"] },
+      membershipType: { type: String, enum: ["silver", "gold","basic"] },
     },
   },
   { timestamps: true }
