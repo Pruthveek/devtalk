@@ -48,7 +48,7 @@ paymentRouter.post("/payment/create", userAuth, async (req, res) => {
   }
 });
 
-paymentRouter.post("/payment/webhook", async (req, res) => {
+paymentRouter.post("4", async (req, res) => {
   try {
     const webhookSignature = req.get("x-razorpay-signature");
     const isWebhookValid = validateWebhookSignature(
@@ -67,6 +67,12 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
     user.isPremium = true;
     user.membershipType = payment.notes.membershipType;
     const currentDate = new Date();
+    user.membershipValidity = new Date(
+      currentDate.setMonth(
+        currentDate.getMonth() +
+          (payment.notes.membershipType === "silver" ? 3 : 6)
+      )
+    );  
     await user.save();
     
     // if (req.body.event === "payment.captured") {
