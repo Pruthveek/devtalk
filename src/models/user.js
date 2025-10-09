@@ -47,9 +47,7 @@ const userSchema = new mongoos.Schema(
         // const strongPasswordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/;
         // const isValidPassword = strongPasswordPattern.test(value);
         if (!validator.isStrongPassword(value)) {
-          throw new Error(
-            "Please add more strong password."
-          );
+          throw new Error("Please add more strong password.");
         }
       },
     },
@@ -60,8 +58,8 @@ const userSchema = new mongoos.Schema(
     gender: {
       type: String,
       enum: {
-        values:["male", "female", "others"],
-        message:`{VALUE} is not a valid gender type`
+        values: ["male", "female", "others"],
+        message: `{VALUE} is not a valid gender type`,
       },
       validate(value) {
         if (!["male", "female", "others"].includes(value)) {
@@ -101,6 +99,20 @@ const userSchema = new mongoos.Schema(
     deletedAt: {
       type: Date,
     },
+    isPremium: {
+      type: Boolean,
+      default: false,
+    },
+    membershipType: {
+      type: String,
+      enum: {
+        values: ["silver", "gold"],
+        message: `{VALUE} is not a valid membership type`,
+      },
+    },
+    membershipValidity: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
@@ -108,7 +120,7 @@ const userSchema = new mongoos.Schema(
 );
 userSchema.methods.getJWT = async function () {
   const user = this;
-  const token = await jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY , {
+  const token = await jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY, {
     expiresIn: "1d",
   });
   return token;
