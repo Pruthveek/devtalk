@@ -27,23 +27,16 @@ app.use(
   })
 );
 
-// app.use(
-//   cors({
-//     origin: process.env.FRONTEND_URL || "http://localhost:5173",
-//     credentials: true,
-//   })
-// );
+// parse normal JSON for most routes
+app.use(express.json());
+
+// IMPORTANT: preserve raw body for razorpay webhook route only
+// mount this before you register your routes
 app.use(
   "/payment/webhook",
-  express.raw({ type: "application/json" })
+  express.raw({ type: "application/json" }) // req.body will be a Buffer for this path
 );
-app.use(express.json({
-  verify: (req, res, buf) => {
-    if (buf && buf.length) {
-      req.rawBody = buf.toString("utf8");
-    }
-  },
-}));
+
 app.use(cookieParser());
 
 const authRouter = require("./routes/auth");
@@ -51,6 +44,7 @@ const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/request");
 const userRouter = require("./routes/user");
 const paymentRouter = require("./routes/payment");
+// register routes after the middleware above
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);

@@ -53,16 +53,18 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
   try {
     console.log("Webhook Called");
     const signature = req.headers["x-razorpay-signature"];
-    // prefer rawBody (set by express.json verify), fallback to stringify(req.body)
-    const rawBody =
-      typeof req.rawBody === "string"
-        ? req.rawBody
-        : typeof req.body === "string"
-        ? req.body
-        : JSON.stringify(req.body);
 
-    console.log("Webhook Signature", signature);
-    console.log("wh s" + process.env.RAZORPAY_WEBHOOK_SECRET);
+    // req.body may be Buffer when express.raw middleware is used for this route
+    const rawBody =
+      Buffer.isBuffer(req.body) ? req.body.toString("utf8") : typeof req.body === "string" ? req.body : JSON.stringify(req.body);
+
+    // Debug: log rawBody (keep short or remove in production)
+    console.log("rawBody length:", rawBody.length);
+    // Debug HMAC computation to compare with incoming signature
+    const crypto = require("crypto");
+    const expected = crypto.createHmac("sha256", process.env.RAZORPAY_WEBHOOK_SECRET).update(rawBody).digest("hex");
+    console.log("Incoming signature:", signature);
+    console.log("Computed signature:", expected);
 
     const isWebhookValid = validateWebhookSignature(
       rawBody,
