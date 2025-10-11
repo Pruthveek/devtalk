@@ -48,14 +48,21 @@ const paymentSchema = new mongoose.Schema(
     status: {
       type: String,
       required: true,
-      enum: ["pending", "created", "failed","captured", "refunded", "cancelled"],
+      enum: [
+        "pending",
+        "created",
+        "failed",
+        "captured",
+        "refunded",
+        "cancelled",
+      ],
       default: "pending",
     },
     notes: {
       firstName: { type: String },
       lastName: { type: String },
       email: { type: String, validate: [validator.isEmail, "Invalid email"] },
-      membershipType: { type: String, enum: ["silver", "gold","basic"] },
+      membershipType: { type: String, enum: ["silver", "gold", "basic"] },
     },
   },
   { timestamps: true }
