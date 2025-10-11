@@ -37,7 +37,13 @@ app.use(
   "/payment/webhook",
   express.raw({ type: "application/json" })
 );
-app.use(express.json());
+app.use(express.json({
+  verify: (req, res, buf) => {
+    if (buf && buf.length) {
+      req.rawBody = buf.toString("utf8");
+    }
+  },
+}));
 app.use(cookieParser());
 
 const authRouter = require("./routes/auth");

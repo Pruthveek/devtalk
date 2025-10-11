@@ -53,13 +53,23 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
   try {
     console.log("Webhook Called");
     const signature = req.headers["x-razorpay-signature"];
+    // prefer rawBody (set by express.json verify), fallback to stringify(req.body)
+    const rawBody =
+      typeof req.rawBody === "string"
+        ? req.rawBody
+        : typeof req.body === "string"
+        ? req.body
+        : JSON.stringify(req.body);
+
     console.log("Webhook Signature", signature);
-    console.log("wh s"+process.env.RAZORPAY_WEBHOOK_SECRET);
-    const isWebhookValid = await validateWebhookSignature(
-      JSON.stringify(req.body),
+    console.log("wh s" + process.env.RAZORPAY_WEBHOOK_SECRET);
+
+    const isWebhookValid = validateWebhookSignature(
+      rawBody,
       signature,
       process.env.RAZORPAY_WEBHOOK_SECRET
     );
+
     console.log("Is Webhook Valid", isWebhookValid);
     if (!isWebhookValid) {
       console.log("Invalid Webhook Signature");
@@ -67,8 +77,9 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
     }
     console.log("Valid Webhook Signature");
 
-    // Udpate my payment Status in DB
-    const paymentDetails = req.body.payload.payment.entity;
+    // parse from the raw body (safe) and proceed
+    const payload = JSON.parse(rawBody);
+    const paymentDetails = payload.payload.payment.entity;
 
     const payment = await Payment.findOne({ orderId: paymentDetails.order_id });
     if (!payment) {
