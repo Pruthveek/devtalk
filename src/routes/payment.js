@@ -96,7 +96,7 @@ paymentRouter.post("/payment/create", userAuth, async (req, res) => {
 
 paymentRouter.post("/payment/webhook", async (req, res) => {
   // The raw body is needed for signature validation, which we get from the middleware
-  const body = req.rawBody;
+  const body = req.body;
   const webhookSignature = req.get("x-razorpay-signature");
 
   if (!webhookSignature) {
