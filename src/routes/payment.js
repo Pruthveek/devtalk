@@ -88,6 +88,7 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
 
     return res.status(200).json({ msg: "Webhook received successfully" });
   } catch (err) {
+    console.error("Webhook handling error:", err);
     res
       .status(500)
       .json({ message: "Invalid webhook signature", error: err.message });
