@@ -26,16 +26,11 @@ app.use(
     credentials: true,
   })
 );
-
-// parse normal JSON for most routes
-app.use(express.json());
-
-// IMPORTANT: preserve raw body for razorpay webhook route only
-// mount this before you register your routes
 app.use(
   "/payment/webhook",
-  express.raw({ type: "application/json" }) // req.body will be a Buffer for this path
+  express.raw({ type: "application/json" })
 );
+app.use(express.json());
 
 app.use(cookieParser());
 

@@ -3,4 +3,9 @@ const membershipAmounts = {
   gold: 30,
 };
 
-module.exports = { membershipAmounts };
+const membershipDurations = {
+  silver: 90, 
+  gold: 180, 
+};
+
+module.exports = { membershipAmounts ,membershipDurations};

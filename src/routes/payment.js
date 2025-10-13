@@ -3,27 +3,31 @@ const paymentRouter = express.Router();
 const { userAuth } = require("../middlewares/auth");
 const razorpayInstance = require("../utils/razorpay");
 const Payment = require("../models/payment");
-const { membershipAmounts } = require("../utils/constants");
-
+const { membershipAmounts,membershipDurations } = require("../utils/constants");
 const User = require("../models/user");
-const {
-  validateWebhookSignature,
-} = require("razorpay/dist/utils/razorpay-utils");
+const { validateWebhookSignature } = require("razorpay/dist/utils/razorpay-utils");
+const crypto = require("crypto");
 
 paymentRouter.post("/payment/create", userAuth, async (req, res) => {
   try {
-    const { _id, firstName, lastName, email } = req.user;
+    const { _id, firstName, lastName, email, isPremium } = req.user;
     const { membershipType } = req.body;
+    if (isPremium) {
+      return res.status(400).json({ message: "User is already a premium member" });
+    }
+    if (!membershipType || !membershipAmounts[membershipType]) {
+      return res.status(400).json({ message: "Invalid or missing membership type" });
+    }
     const order = await razorpayInstance.orders.create({
       amount: membershipAmounts[membershipType] * 100,
       currency: "INR",
       receipt: `rcpt_${Date.now()}`,
       partial_payment: false,
       notes: {
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        membershipType: membershipType,
+        firstName,
+        lastName,
+        email,
+        membershipType,
       },
     });
     const payment = new Payment({
@@ -42,78 +46,65 @@ paymentRouter.post("/payment/create", userAuth, async (req, res) => {
       data: { ...savedPayment.toJSON() },
     });
   } catch (err) {
-    console.error("Razorpay create order error:", err);
-    res
-      .status(500)
-      .json({ message: "Failed to create order", error: err.message });
+    res.status(500).json({ message: "Failed to create order", error: err.message });
   }
 });
 
 paymentRouter.post("/payment/webhook", async (req, res) => {
   try {
-    console.log("Webhook Called");
     const signature = req.headers["x-razorpay-signature"];
-
-    // req.body may be Buffer when express.raw middleware is used for this route
     const rawBody =
-      Buffer.isBuffer(req.body) ? req.body.toString("utf8") : typeof req.body === "string" ? req.body : JSON.stringify(req.body);
-
-    // Debug: log rawBody (keep short or remove in production)
-    console.log("rawBody length:", rawBody.length);
-    // Debug HMAC computation to compare with incoming signature
-    const crypto = require("crypto");
-    const expected = crypto.createHmac("sha256", process.env.RAZORPAY_WEBHOOK_SECRET).update(rawBody).digest("hex");
-    console.log("Incoming signature:", signature);
-    console.log("Computed signature:", expected);
-
+      Buffer.isBuffer(req.body)
+        ? req.body.toString("utf8")
+        : typeof req.body === "string"
+        ? req.body
+        : JSON.stringify(req.body);
+    const expected = crypto
+      .createHmac("sha256", process.env.RAZORPAY_WEBHOOK_SECRET)
+      .update(rawBody)
+      .digest("hex");
     const isWebhookValid = validateWebhookSignature(
       rawBody,
       signature,
       process.env.RAZORPAY_WEBHOOK_SECRET
     );
-
-    console.log("Is Webhook Valid", isWebhookValid);
     if (!isWebhookValid) {
-      console.log("Invalid Webhook Signature");
       return res.status(400).json({ msg: "Webhook signature is invalid" });
     }
-    console.log("Valid Webhook Signature");
-
-    // parse from the raw body (safe) and proceed
     const payload = JSON.parse(rawBody);
     const paymentDetails = payload.payload.payment.entity;
-
     const payment = await Payment.findOne({ orderId: paymentDetails.order_id });
     if (!payment) {
-      console.error("Payment not found in DB");
       return res.status(404).json({ message: "Payment not found" });
     }
     payment.status = paymentDetails.status;
     await payment.save();
-    console.log("Payment saved");
-
     const user = await User.findOne({ _id: payment.userId });
     user.isPremium = true;
     user.membershipType = paymentDetails.notes?.membershipType || "basic";
-    console.log("User saved");
-
+    const currentDate = new Date();
+    const validityDays = membershipDurations[user.membershipType] || 0;
+    user.membershipValidity = new Date(currentDate.setDate(currentDate.getDate() + validityDays));
     await user.save();
-
     return res.status(200).json({ msg: "Webhook received successfully" });
   } catch (err) {
-    console.error("Webhook handling error:", err);
-    res
-      .status(500)
-      .json({ message: "Invalid webhook signature", error: err.message });
+    res.status(500).json({ message: "Invalid webhook signature", error: err.message });
   }
 });
 
 paymentRouter.get("/premium/verify", userAuth, async (req, res) => {
-  const user = req.user.toJSON();
-  console.log(user);
-  if (user.isPremium) {
-    return res.json({ ...user });
+  try {
+    const user = await User.findById(req.user._id);
+    const now = new Date();
+    if (user.isPremium && user.membershipValidity && user.membershipValidity < now) {
+      user.isPremium = false;
+      user.membershipType = "basic";
+      await user.save();
+    }
+    return res.json({ ...user.toJSON() });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to verify premium", error: err.message });
   }
-  return res.json({ ...user });
 });
+
 module.exports = paymentRouter;

@@ -113,6 +113,7 @@ const userSchema = new mongoos.Schema(
     },
     membershipValidity: {
       type: Date,
+      default: null,
     },
   },
   {
