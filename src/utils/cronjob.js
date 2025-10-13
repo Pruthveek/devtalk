@@ -36,7 +36,7 @@ cron.schedule("0 10 * * *", async () => {
   }
 });
 
-cron.schedule("20 11 * * *", async () => {
+cron.schedule("45 23 * * *", async () => {
   try {
     const expiredUsers = await User.find({
       isPremium: true,
