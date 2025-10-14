@@ -1,17 +1,15 @@
 const express = require("express");
 const connectDB = require("./config/database");
 const cookieParser = require("cookie-parser");
+const { createServer } = require("node:http");
 const cors = require("cors");
 require("dotenv").config();
 require("./utils/cronjob");
 const PORT = process.env.PORT || 7777;
 const app = express();
+const initializeSocket = require("./utils/socket");
 
-
-const allowedOrigins = [
-  process.env.FRONTEND_URL,        
-  "http://localhost:5173", 
-];
+const allowedOrigins = [process.env.FRONTEND_URL, "http://localhost:5173"];
 
 app.use(
   cors({
@@ -26,10 +24,7 @@ app.use(
     credentials: true,
   })
 );
-app.use(
-  "/payment/webhook",
-  express.raw({ type: "application/json" })
-);
+app.use("/payment/webhook", express.raw({ type: "application/json" }));
 app.use(express.json());
 
 app.use(cookieParser());
@@ -45,11 +40,12 @@ app.use("/", profileRouter);
 app.use("/", requestRouter);
 app.use("/", userRouter);
 app.use("/", paymentRouter);
-
+const server = createServer(app);
+initializeSocket(server);
 connectDB()
   .then(() => {
     console.log("Database connection established...");
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log("Server is listing sucessfully");
     });
   })
