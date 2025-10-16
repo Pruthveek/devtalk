@@ -8,8 +8,7 @@ const mongoose = require("mongoose");
 // Simple test route
 requestRouter.post("/sendConnectionRequest", userAuth, async (req, res) => {
   const user = req.user;
-  console.log("Sending a connection request");
-  res.json({ message: `${user.firstName} sent the connect request!` });
+  res.json({ message: `${user.firstName} ${user.isPremium} sent the connect request!` });
 });
 
 // Send connection request route
