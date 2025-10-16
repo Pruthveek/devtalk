@@ -13,9 +13,11 @@ chatRouter.get("/chat/:targetUserId", userAuth, async (req, res) => {
     const isPremium = req.user?.isPremium;
 
     // Fetch target user's premium status only
-    const targetUser = await User.findById(targetUserId).select("isPremium");
+    const targetUser = await User.findById(targetUserId).select(
+      "isPremium photoUrl"
+    );
     const targetIsPremium = targetUser?.isPremium;
-
+    const targetUserPhotoUrl = targetUser?.photoUrl;
     // Check if both are friends
     const isFriend = await ConnectionRequest.exists({
       status: "accepted",
@@ -24,8 +26,6 @@ chatRouter.get("/chat/:targetUserId", userAuth, async (req, res) => {
         { fromUserId: targetUserId, toUserId: userId },
       ],
     });
-
-    console.log("isFriend:", isFriend);
 
     if (!isFriend) {
       return res.status(403).json({ message: "You are not friends." });
@@ -58,7 +58,7 @@ chatRouter.get("/chat/:targetUserId", userAuth, async (req, res) => {
     }
 
     // Send chat data
-    return res.status(200).json({ success: true, chat });
+    return res.status(200).json({ success: true,targetUserPhotoUrl, chat });
   } catch (err) {
     console.error("Chat route error:", err);
     res
